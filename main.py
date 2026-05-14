@@ -3,6 +3,7 @@ from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from kivy.clock import Clock
 from kivy.properties import StringProperty, NumericProperty, ColorProperty, BooleanProperty
+from kivy.metrics import dp
 import threading
 
 try:
@@ -19,173 +20,196 @@ except ImportError:
 
 KV = '''
 MDScreen:
-    md_bg_color: self.theme_cls.backgroundColor
+    md_bg_color: 0.1, 0.1, 0.1, 1
 
     MDBoxLayout:
         orientation: 'vertical'
 
-        # ✅ MDTopAppBar com nova API KivyMD 2.0
-        MDTopAppBar:
-            type: "small"
+        # Top bar manual — evita crash do MDTopAppBar 2.0
+        MDBoxLayout:
+            size_hint_y: None
+            height: "56dp"
+            padding: "12dp", "8dp"
+            spacing: "8dp"
+            md_bg_color: 0.08, 0.08, 0.08, 1
 
-            MDTopAppBarLeadingButtonContainer:
-
-            MDTopAppBarTitle:
-                text: "H2O PRO - SISTEMA SUPERVISÓRIO"
+            MDLabel:
+                text: "H2O PRO - SISTEMA SUPERVISORIO"
                 font_style: "titleMedium"
+                theme_text_color: "Custom"
                 text_color: 0, 0.8, 1, 1
+                halign: "left"
+                valign: "center"
 
-            MDTopAppBarTrailingButtonContainer:
-                MDActionTopAppBarButton:
-                    icon: "water-pump"
-                    on_release: app.mostrar_info()
+            MDIconButton:
+                icon: "information-outline"
+                theme_icon_color: "Custom"
+                icon_color: 0, 0.8, 1, 1
+                size_hint_x: None
+                width: "48dp"
+                on_release: app.mostrar_info()
 
-        MDGridLayout:
-            cols: 2
-            padding: "15dp"
-            spacing: "15dp"
+        # Grade principal
+        MDBoxLayout:
+            orientation: 'horizontal'
+            padding: "12dp"
+            spacing: "12dp"
+            size_hint_y: 1
 
-            # Card do reservatório
+            # Card reservatorio
             MDCard:
+                size_hint_x: 0.45
                 padding: "10dp"
-                size_hint: 1, 1
-                elevation: 2
-                radius: [15, ]
+                radius: [15,]
                 md_bg_color: 0.15, 0.15, 0.15, 1
 
                 MDBoxLayout:
                     orientation: 'vertical'
+                    spacing: "8dp"
 
                     MDLabel:
-                        text: "NÍVEL DO RESERVATÓRIO"
+                        text: "NIVEL"
                         halign: "center"
-                        font_style: "titleSmall"
+                        font_style: "labelLarge"
                         theme_text_color: "Custom"
                         text_color: 1, 1, 1, 1
                         size_hint_y: None
-                        height: "30dp"
+                        height: "24dp"
 
-                    MDRelativeLayout:
+                    MDLabel:
+                        text: "RESERVATORIO"
+                        halign: "center"
+                        font_style: "labelSmall"
+                        theme_text_color: "Custom"
+                        text_color: 0.7, 0.7, 0.7, 1
+                        size_hint_y: None
+                        height: "20dp"
+
+                    Widget:
                         size_hint: None, None
-                        size: "120dp", "250dp"
+                        size: "90dp", "220dp"
                         pos_hint: {"center_x": .5}
+                        canvas:
+                            Color:
+                                rgba: 0.3, 0.3, 0.3, 1
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [0, 0, 14, 14]
+                            Color:
+                                rgba: 0, 0.5, 0.9, 0.85
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.width, app.nivel_grafico
+                                radius: [0, 0, 14, 14]
 
-                        MDCard:
-                            size_hint: 1, 1
-                            md_bg_color: 0.3, 0.3, 0.3, 1
-                            radius: [0, 0, 20, 20]
-
-                        MDCard:
-                            size_hint: 1, None
-                            height: app.nivel_grafico
-                            md_bg_color: 0, 0.5, 0.9, 0.8
-                            radius: [0, 0, 20, 20]
-                            pos_hint: {"bottom": 1}
-
-                        MDLabel:
-                            text: "100%"
-                            pos_hint: {"top": 1.1, "x": 1.1}
-                            theme_text_color: "Hint"
-
-                        MDLabel:
-                            text: "0%"
-                            pos_hint: {"bottom": 0.9, "x": 1.1}
-                            theme_text_color: "Hint"
-
-            # Painel direito
+            # Coluna direita
             MDBoxLayout:
                 orientation: 'vertical'
-                spacing: "15dp"
+                size_hint_x: 0.55
+                spacing: "10dp"
 
                 # Card motor
                 MDCard:
-                    padding: "15dp"
-                    elevation: 1
-                    radius: [15, ]
-                    md_bg_color: 0.12, 0.12, 0.12, 1
                     size_hint_y: None
-                    height: "100dp"
+                    height: "90dp"
+                    padding: "12dp"
+                    radius: [15,]
+                    md_bg_color: 0.12, 0.12, 0.12, 1
 
                     MDBoxLayout:
                         orientation: 'horizontal'
-                        spacing: "10dp"
+                        spacing: "8dp"
 
                         MDIcon:
                             icon: "engine"
-                            font_size: "48sp"
+                            font_size: "40sp"
                             theme_text_color: "Custom"
                             text_color: app.cor_bomba
                             size_hint_x: None
-                            width: "56dp"
+                            width: "48dp"
                             pos_hint: {"center_y": .5}
 
                         MDBoxLayout:
                             orientation: 'vertical'
-                            padding: ["10dp", 0, 0, 0]
                             pos_hint: {"center_y": .5}
 
                             MDLabel:
                                 text: "ESTADO DO MOTOR"
-                                theme_text_color: "Hint"
+                                theme_text_color: "Custom"
+                                text_color: 0.6, 0.6, 0.6, 1
                                 font_style: "labelSmall"
+                                size_hint_y: None
+                                height: "20dp"
 
                             MDLabel:
                                 text: app.status_bomba
-                                font_style: "headlineSmall"
+                                font_style: "titleMedium"
                                 bold: True
                                 theme_text_color: "Custom"
                                 text_color: app.cor_bomba
 
                 # Card sensores
                 MDCard:
-                    padding: "15dp"
-                    elevation: 1
-                    radius: [15, ]
+                    size_hint_y: None
+                    height: "110dp"
+                    padding: "12dp"
+                    radius: [15,]
                     md_bg_color: 0.12, 0.12, 0.12, 1
 
                     MDBoxLayout:
                         orientation: 'vertical'
-                        spacing: "10dp"
+                        spacing: "8dp"
 
                         MDLabel:
-                            text: "SENSORES DE NÍVEL"
-                            font_style: "titleMedium"
-                            theme_text_color: "Primary"
+                            text: "SENSORES DE NIVEL"
+                            font_style: "labelMedium"
+                            theme_text_color: "Custom"
+                            text_color: 0.8, 0.8, 0.8, 1
+                            size_hint_y: None
+                            height: "20dp"
 
                         MDBoxLayout:
                             spacing: "8dp"
+                            size_hint_y: None
+                            height: "28dp"
                             MDIcon:
                                 icon: "arrow-up-bold-circle"
-                                text_color: app.cor_alto
                                 theme_text_color: "Custom"
+                                text_color: app.cor_alto
                                 size_hint_x: None
-                                width: "32dp"
+                                width: "28dp"
                             MDLabel:
-                                text: "Nível Alto (Boia)"
+                                text: "Boia Alta"
                                 theme_text_color: "Custom"
                                 text_color: app.cor_alto
+                                font_style: "bodySmall"
 
                         MDBoxLayout:
                             spacing: "8dp"
+                            size_hint_y: None
+                            height: "28dp"
                             MDIcon:
                                 icon: "arrow-down-bold-circle"
-                                text_color: app.cor_baixo
                                 theme_text_color: "Custom"
+                                text_color: app.cor_baixo
                                 size_hint_x: None
-                                width: "32dp"
+                                width: "28dp"
                             MDLabel:
-                                text: "Nível Baixo (Boia)"
+                                text: "Boia Baixa"
                                 theme_text_color: "Custom"
                                 text_color: app.cor_baixo
+                                font_style: "bodySmall"
 
-                # ✅ Botão Bluetooth — MDButton no lugar de MDFillRoundFlatIconButton
+                # Botao Bluetooth
                 MDButton:
                     style: "filled"
                     size_hint_x: 1
-                    height: "50dp"
-                    md_bg_color: app.cor_conexao
+                    height: "48dp"
                     on_release: app.alternar_conexao()
                     pos_hint: {"center_x": .5}
+                    theme_bg_color: "Custom"
+                    md_bg_color: app.cor_conexao
 
                     MDButtonIcon:
                         icon: "bluetooth"
@@ -193,17 +217,18 @@ MDScreen:
                     MDButtonText:
                         text: app.texto_conexao
 
-        # Botões LIGAR / DESLIGAR
+        # Botoes LIGAR / DESLIGAR
         MDBoxLayout:
             size_hint_y: None
-            height: "80dp"
-            padding: "10dp"
-            spacing: "10dp"
+            height: "70dp"
+            padding: "12dp", "8dp"
+            spacing: "12dp"
 
-            # ✅ MDRaisedButton substituído por MDButton filled
             MDButton:
                 style: "filled"
                 size_hint_x: 0.5
+                height: "50dp"
+                theme_bg_color: "Custom"
                 md_bg_color: 0, 0.7, 0.3, 1
                 on_release: app.enviar_comando('L')
 
@@ -213,6 +238,8 @@ MDScreen:
             MDButton:
                 style: "filled"
                 size_hint_x: 0.5
+                height: "50dp"
+                theme_bg_color: "Custom"
                 md_bg_color: 0.8, 0.1, 0.1, 1
                 on_release: app.enviar_comando('D')
 
@@ -271,8 +298,8 @@ class SupervisorioTechApp(MDApp):
             self.cor_conexao = [0, 0.7, 0.3, 1]
             self.conectado = True
             threading.Thread(target=self.ler_dados_serial, daemon=True).start()
-        except Exception as e:
-            self.texto_conexao = "ERRO CONEXÃO"
+        except Exception:
+            self.texto_conexao = "ERRO CONEXAO"
             self.cor_conexao = [0.8, 0.1, 0.1, 1]
 
     def desconectar_bluetooth(self):
@@ -284,7 +311,6 @@ class SupervisorioTechApp(MDApp):
         self.cor_baixo = [0.3, 0.3, 0.3, 1]
         self.status_bomba = "DESCONECTADO"
         self.cor_bomba = [0.5, 0.5, 0.5, 1]
-        # ✅ try/except para evitar crash ao fechar socket morto
         if self.socket_bluetooth:
             try:
                 self.socket_bluetooth.close()
@@ -313,22 +339,22 @@ class SupervisorioTechApp(MDApp):
             if len(partes) == 3:
                 st_bomba, st_baixo, st_alto = partes
                 if st_bomba == "LIGADA":
-                    self.status_bomba = "EM OPERAÇÃO"
+                    self.status_bomba = "EM OPERACAO"
                     self.cor_bomba = [0, 1, 0.5, 1]
                 else:
                     self.status_bomba = "PARADO"
                     self.cor_bomba = [1, 0.2, 0.2, 1]
 
                 if st_alto == "COM_AGUA":
-                    self.nivel_grafico = 250
+                    self.nivel_grafico = dp(220)
                     self.cor_alto = [0, 0.8, 1, 1]
                     self.cor_baixo = [0, 0.8, 1, 1]
                 elif st_baixo == "COM_AGUA":
-                    self.nivel_grafico = 125
+                    self.nivel_grafico = dp(110)
                     self.cor_alto = [0.3, 0.3, 0.3, 1]
                     self.cor_baixo = [0, 0.8, 1, 1]
                 else:
-                    self.nivel_grafico = 10
+                    self.nivel_grafico = dp(10)
                     self.cor_alto = [0.3, 0.3, 0.3, 1]
                     self.cor_baixo = [1, 0.6, 0, 1]
         except Exception:
@@ -343,15 +369,21 @@ class SupervisorioTechApp(MDApp):
                 pass
 
     def mostrar_info(self):
-        # ✅ MDSnackbar com nova API KivyMD 2.0
         from kivymd.uix.snackbar import MDSnackbar
-        MDSnackbar(text="H2O Pro v1.0 - Monitoramento Ativo").open()
+        from kivymd.uix.label import MDLabel
+        snack = MDSnackbar(
+            MDLabel(text="H2O Pro v1.0 - Monitoramento Ativo"),
+            y=dp(24),
+            pos_hint={"center_x": 0.5},
+            size_hint_x=0.9,
+        )
+        snack.open()
 
     def atualizar_interface_simulada(self):
-        self.nivel_grafico = 125
+        self.nivel_grafico = dp(110)
         self.cor_baixo = [0, 0.8, 1, 1]
         self.cor_alto = [0.3, 0.3, 0.3, 1]
-        self.status_bomba = "SIMULAÇÃO ON"
+        self.status_bomba = "SIMULACAO ON"
         self.cor_bomba = [0, 1, 0.5, 1]
 
 
