@@ -14,13 +14,20 @@ except ImportError:
     ON_ANDROID = False
 
 KV = '''
+<EstiloBtn@Button>:
+    background_normal: ''
+    background_color: 0.2, 0.2, 0.2, 1
+    color: 1, 1, 1, 1
+    bold: True
+    font_size: "13sp"
+
 MDScreen:
     md_bg_color: 0.1, 0.1, 0.1, 1
 
     MDBoxLayout:
         orientation: 'vertical'
 
-        # Top bar manual
+        # Topo
         MDBoxLayout:
             size_hint_y: None
             height: "56dp"
@@ -36,15 +43,18 @@ MDScreen:
                 halign: "left"
                 valign: "center"
 
-            MDIconButton:
-                icon: "information-outline"
-                theme_icon_color: "Custom"
-                icon_color: 0, 0.8, 1, 1
+            Button:
+                text: "i"
                 size_hint_x: None
-                width: "48dp"
+                width: "40dp"
+                background_normal: ''
+                background_color: 0, 0, 0, 0
+                color: 0, 0.8, 1, 1
+                bold: True
+                font_size: "20sp"
                 on_release: app.mostrar_info()
 
-        # Grade principal
+        # Conteudo principal
         MDBoxLayout:
             orientation: 'horizontal'
             padding: "12dp"
@@ -60,29 +70,29 @@ MDScreen:
 
                 MDBoxLayout:
                     orientation: 'vertical'
-                    spacing: "8dp"
+                    spacing: "6dp"
 
                     MDLabel:
-                        text: "NIVEL"
+                        text: "NIVEL DO"
                         halign: "center"
                         font_style: "labelLarge"
                         theme_text_color: "Custom"
                         text_color: 1, 1, 1, 1
                         size_hint_y: None
-                        height: "24dp"
+                        height: "22dp"
 
                     MDLabel:
                         text: "RESERVATORIO"
                         halign: "center"
                         font_style: "labelSmall"
                         theme_text_color: "Custom"
-                        text_color: 0.7, 0.7, 0.7, 1
+                        text_color: 0.6, 0.6, 0.6, 1
                         size_hint_y: None
-                        height: "20dp"
+                        height: "18dp"
 
                     Widget:
                         size_hint: None, None
-                        size: "90dp", "220dp"
+                        size: "80dp", "210dp"
                         pos_hint: {"center_x": .5}
                         canvas:
                             Color:
@@ -90,13 +100,13 @@ MDScreen:
                             RoundedRectangle:
                                 pos: self.pos
                                 size: self.size
-                                radius: [0, 0, 14, 14]
+                                radius: [0, 0, 12, 12]
                             Color:
                                 rgba: 0, 0.5, 0.9, 0.85
                             RoundedRectangle:
                                 pos: self.pos
                                 size: self.width, app.nivel_grafico
-                                radius: [0, 0, 14, 14]
+                                radius: [0, 0, 12, 12]
 
             # Coluna direita
             MDBoxLayout:
@@ -108,7 +118,7 @@ MDScreen:
                 MDCard:
                     size_hint_y: None
                     height: "90dp"
-                    padding: "12dp"
+                    padding: "10dp"
                     radius: [15,]
                     md_bg_color: 0.12, 0.12, 0.12, 1
 
@@ -118,11 +128,11 @@ MDScreen:
 
                         MDIcon:
                             icon: "engine"
-                            font_size: "40sp"
+                            font_size: "38sp"
                             theme_text_color: "Custom"
                             text_color: app.cor_bomba
                             size_hint_x: None
-                            width: "48dp"
+                            width: "44dp"
                             pos_hint: {"center_y": .5}
 
                         MDBoxLayout:
@@ -132,14 +142,14 @@ MDScreen:
                             MDLabel:
                                 text: "ESTADO DO MOTOR"
                                 theme_text_color: "Custom"
-                                text_color: 0.6, 0.6, 0.6, 1
+                                text_color: 0.5, 0.5, 0.5, 1
                                 font_style: "labelSmall"
                                 size_hint_y: None
-                                height: "20dp"
+                                height: "18dp"
 
                             MDLabel:
                                 text: app.status_bomba
-                                font_style: "titleMedium"
+                                font_style: "titleSmall"
                                 bold: True
                                 theme_text_color: "Custom"
                                 text_color: app.cor_bomba
@@ -147,14 +157,14 @@ MDScreen:
                 # Card sensores
                 MDCard:
                     size_hint_y: None
-                    height: "110dp"
-                    padding: "12dp"
+                    height: "105dp"
+                    padding: "10dp"
                     radius: [15,]
                     md_bg_color: 0.12, 0.12, 0.12, 1
 
                     MDBoxLayout:
                         orientation: 'vertical'
-                        spacing: "8dp"
+                        spacing: "6dp"
 
                         MDLabel:
                             text: "SENSORES DE NIVEL"
@@ -162,18 +172,18 @@ MDScreen:
                             theme_text_color: "Custom"
                             text_color: 0.8, 0.8, 0.8, 1
                             size_hint_y: None
-                            height: "20dp"
+                            height: "18dp"
 
                         MDBoxLayout:
-                            spacing: "8dp"
+                            spacing: "6dp"
                             size_hint_y: None
-                            height: "28dp"
+                            height: "26dp"
                             MDIcon:
                                 icon: "arrow-up-bold-circle"
                                 theme_text_color: "Custom"
                                 text_color: app.cor_alto
                                 size_hint_x: None
-                                width: "28dp"
+                                width: "26dp"
                             MDLabel:
                                 text: "Boia Alta"
                                 theme_text_color: "Custom"
@@ -181,65 +191,59 @@ MDScreen:
                                 font_style: "bodySmall"
 
                         MDBoxLayout:
-                            spacing: "8dp"
+                            spacing: "6dp"
                             size_hint_y: None
-                            height: "28dp"
+                            height: "26dp"
                             MDIcon:
                                 icon: "arrow-down-bold-circle"
                                 theme_text_color: "Custom"
                                 text_color: app.cor_baixo
                                 size_hint_x: None
-                                width: "28dp"
+                                width: "26dp"
                             MDLabel:
                                 text: "Boia Baixa"
                                 theme_text_color: "Custom"
                                 text_color: app.cor_baixo
                                 font_style: "bodySmall"
 
-                # Botao Bluetooth
-                MDButton:
-                    style: "filled"
+                # Botao Bluetooth — Button puro, sem MDButton
+                Button:
+                    text: app.texto_conexao
                     size_hint_x: 1
-                    height: "48dp"
+                    height: "46dp"
+                    background_normal: ''
+                    background_color: app.cor_conexao
+                    color: 1, 1, 1, 1
+                    bold: True
+                    font_size: "12sp"
                     on_release: app.alternar_conexao()
-                    pos_hint: {"center_x": .5}
-                    theme_bg_color: "Custom"
-                    md_bg_color: app.cor_conexao
 
-                    MDButtonIcon:
-                        icon: "bluetooth"
-
-                    MDButtonText:
-                        text: app.texto_conexao
-
-        # Botoes LIGAR / DESLIGAR
+        # Botoes LIGAR / DESLIGAR — Button puro, sem MDButton
         MDBoxLayout:
             size_hint_y: None
-            height: "70dp"
+            height: "68dp"
             padding: "12dp", "8dp"
             spacing: "12dp"
 
-            MDButton:
-                style: "filled"
+            Button:
+                text: "LIGAR"
                 size_hint_x: 0.5
-                height: "50dp"
-                theme_bg_color: "Custom"
-                md_bg_color: 0, 0.7, 0.3, 1
+                background_normal: ''
+                background_color: 0, 0.7, 0.3, 1
+                color: 1, 1, 1, 1
+                bold: True
+                font_size: "14sp"
                 on_release: app.enviar_comando('L')
 
-                MDButtonText:
-                    text: "LIGAR"
-
-            MDButton:
-                style: "filled"
+            Button:
+                text: "DESLIGAR"
                 size_hint_x: 0.5
-                height: "50dp"
-                theme_bg_color: "Custom"
-                md_bg_color: 0.8, 0.1, 0.1, 1
+                background_normal: ''
+                background_color: 0.8, 0.1, 0.1, 1
+                color: 1, 1, 1, 1
+                bold: True
+                font_size: "14sp"
                 on_release: app.enviar_comando('D')
-
-                MDButtonText:
-                    text: "DESLIGAR"
 '''
 
 
@@ -262,7 +266,6 @@ class SupervisorioTechApp(MDApp):
         return Builder.load_string(KV)
 
     def on_start(self):
-        # ✅ Permissoes pedidas DEPOIS do app estar pronto — evita crash
         if ON_ANDROID:
             from android.permissions import request_permissions, Permission
             request_permissions([
@@ -354,11 +357,11 @@ class SupervisorioTechApp(MDApp):
                     self.cor_bomba = [1, 0.2, 0.2, 1]
 
                 if st_alto == "COM_AGUA":
-                    self.nivel_grafico = dp(220)
+                    self.nivel_grafico = dp(210)
                     self.cor_alto = [0, 0.8, 1, 1]
                     self.cor_baixo = [0, 0.8, 1, 1]
                 elif st_baixo == "COM_AGUA":
-                    self.nivel_grafico = dp(110)
+                    self.nivel_grafico = dp(105)
                     self.cor_alto = [0.3, 0.3, 0.3, 1]
                     self.cor_baixo = [0, 0.8, 1, 1]
                 else:
@@ -388,7 +391,7 @@ class SupervisorioTechApp(MDApp):
         snack.open()
 
     def atualizar_interface_simulada(self):
-        self.nivel_grafico = dp(110)
+        self.nivel_grafico = dp(105)
         self.cor_baixo = [0, 0.8, 1, 1]
         self.cor_alto = [0.3, 0.3, 0.3, 1]
         self.status_bomba = "SIMULACAO ON"
