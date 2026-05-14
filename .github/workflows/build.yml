@@ -29,6 +29,8 @@ jobs:
             build-essential ccache \
             autoconf automake libtool \
             python3-pip python3-setuptools
+          sudo update-alternatives --set java /usr/lib/jvm/temurin-17-jdk-amd64/bin/java
+          sudo update-alternatives --set javac /usr/lib/jvm/temurin-17-jdk-amd64/bin/javac
 
       - name: Instalar Android SDK Command Line Tools
         run: |
@@ -87,7 +89,9 @@ jobs:
         env:
           BUILDOZER_WARN_ON_ROOT: 0
           ANDROID_SDK_ROOT: /home/runner/.buildozer/android/platform/android-sdk
+          JAVA_HOME: /usr/lib/jvm/temurin-17-jdk-amd64
         run: |
+          export PATH=$JAVA_HOME/bin:$PATH
           buildozer -v android debug
 
       - name: Upload APK
