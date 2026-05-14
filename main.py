@@ -8,12 +8,7 @@ import threading
 
 try:
     from jnius import autoclass
-    from android.permissions import request_permissions, Permission
-    request_permissions([
-        Permission.BLUETOOTH_CONNECT,
-        Permission.BLUETOOTH_SCAN,
-        Permission.ACCESS_FINE_LOCATION
-    ])
+    import android  # noqa
     ON_ANDROID = True
 except ImportError:
     ON_ANDROID = False
@@ -25,7 +20,7 @@ MDScreen:
     MDBoxLayout:
         orientation: 'vertical'
 
-        # Top bar manual — evita crash do MDTopAppBar 2.0
+        # Top bar manual
         MDBoxLayout:
             size_hint_y: None
             height: "56dp"
@@ -265,6 +260,19 @@ class SupervisorioTechApp(MDApp):
         self.input_stream = None
         self.output_stream = None
         return Builder.load_string(KV)
+
+    def on_start(self):
+        # ✅ Permissoes pedidas DEPOIS do app estar pronto — evita crash
+        if ON_ANDROID:
+            from android.permissions import request_permissions, Permission
+            request_permissions([
+                Permission.BLUETOOTH,
+                Permission.BLUETOOTH_ADMIN,
+                Permission.BLUETOOTH_CONNECT,
+                Permission.BLUETOOTH_SCAN,
+                Permission.ACCESS_FINE_LOCATION,
+                Permission.ACCESS_COARSE_LOCATION,
+            ])
 
     def alternar_conexao(self):
         if not self.conectado:
