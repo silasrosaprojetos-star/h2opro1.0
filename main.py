@@ -162,13 +162,13 @@ MDScreen:
             spacing: "10dp"
 
             MDRaisedButton:
-                text: "FORÇAR LIGAR"
+                text: "LIGAR/MANUAL"
                 md_bg_color: 0, 0.7, 0.3, 1
                 size_hint_x: 0.5
                 on_release: app.enviar_comando('L')
 
             MDRaisedButton:
-                text: "FORÇAR DESLIGAR"
+                text: "DESLIGAR/PARADA"
                 md_bg_color: 0.8, 0.1, 0.1, 1
                 size_hint_x: 0.5
                 on_release: app.enviar_comando('D')
