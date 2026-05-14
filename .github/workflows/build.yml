@@ -1,0 +1,73 @@
+name: Build APK H2O Pro
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Instalar dependências do sistema
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git zip unzip openjdk-17-jdk \
+            libgl1-mesa-dev libgles2-mesa-dev \
+            libffi-dev libssl-dev \
+            build-essential ccache \
+            autoconf automake libtool \
+            python3-pip python3-setuptools
+
+      - name: Instalar Buildozer e dependências Python
+        run: |
+          pip install --upgrade pip
+          pip install buildozer cython==0.29.33
+
+      - name: Cache Buildozer global (NDK, SDK, recipes)
+        uses: actions/cache@v4
+        with:
+          path: ~/.buildozer
+          key: buildozer-global-${{ runner.os }}-${{ hashFiles('buildozer.spec') }}
+          restore-keys: |
+            buildozer-global-${{ runner.os }}-
+
+      - name: Cache build local do projeto
+        uses: actions/cache@v4
+        with:
+          path: .buildozer
+          key: buildozer-local-${{ runner.os }}-${{ hashFiles('buildozer.spec') }}-${{ hashFiles('main.py') }}
+          restore-keys: |
+            buildozer-local-${{ runner.os }}-
+
+      - name: Cache ccache (compilação C/C++)
+        uses: actions/cache@v4
+        with:
+          path: ~/.ccache
+          key: ccache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            ccache-${{ runner.os }}-
+
+      - name: Compilar APK
+        env:
+          BUILDOZER_WARN_ON_ROOT: 0
+        run: |
+          buildozer -v android debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: h2opro-debug
+          path: bin/*.apk
+          retention-days: 30
