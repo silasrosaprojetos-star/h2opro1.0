@@ -1,4 +1,3 @@
-
 from kivymd.app import MDApp
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
@@ -162,13 +161,13 @@ MDScreen:
             spacing: "10dp"
 
             MDRaisedButton:
-                text: "LIGAR/MANUAL"
+                text: "LIGAR"
                 md_bg_color: 0, 0.7, 0.3, 1
                 size_hint_x: 0.5
                 on_release: app.enviar_comando('L')
 
             MDRaisedButton:
-                text: "DESLIGAR/PARADA"
+                text: "DESLIGAR"
                 md_bg_color: 0.8, 0.1, 0.1, 1
                 size_hint_x: 0.5
                 on_release: app.enviar_comando('D')
@@ -290,8 +289,9 @@ class SupervisorioTechApp(MDApp):
                 pass
 
     def mostrar_info(self):
-        from kivymd.uix.snackbar import Snackbar
-        Snackbar(text="H2O Pro v1.0 - Monitoramento Ativo").open()
+        from kivymd.uix.snackbar import MDSnackbar
+        from kivymd.uix.label import MDLabel
+        MDSnackbar(MDLabel(text="H2O Pro v1.0 - Monitoramento Ativo")).open()
 
     def atualizar_interface_simulada(self):
         self.nivel_grafico = 125
