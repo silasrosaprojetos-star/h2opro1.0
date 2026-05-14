@@ -29,22 +29,34 @@ jobs:
             build-essential ccache \
             autoconf automake libtool \
             python3-pip python3-setuptools
-          yes | sudo /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses 2>/dev/null || true
+
+      - name: Instalar Android SDK Command Line Tools
+        run: |
+          mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools
+          cd ~/.buildozer/android/platform/android-sdk/cmdline-tools
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
+          unzip -q cmdline-tools.zip
+          mv cmdline-tools latest
+          rm cmdline-tools.zip
 
       - name: Aceitar licenças Android SDK
         run: |
-          mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
-          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-          echo "84831b9409646a918e30573bab4c9c91346d8abd" >> ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-          echo "d56f5187479451eabf01fb78af6dfcb131a6481e" >> ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-          echo "e9acab5b5fbb560a72cfaecce8946896ff6aab9d" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
+          export ANDROID_SDK_ROOT=~/.buildozer/android/platform/android-sdk
+          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH
+          mkdir -p $ANDROID_SDK_ROOT/licenses
+          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > $ANDROID_SDK_ROOT/licenses/android-sdk-license
+          echo "84831b9409646a918e30573bab4c9c91346d8abd" >> $ANDROID_SDK_ROOT/licenses/android-sdk-license
+          echo "d56f5187479451eabf01fb78af6dfcb131a6481e" >> $ANDROID_SDK_ROOT/licenses/android-sdk-license
+          echo "e9acab5b5fbb560a72cfaecce8946896ff6aab9d" > $ANDROID_SDK_ROOT/licenses/android-sdk-preview-license
+          yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses 2>/dev/null || true
+          sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platform-tools" "platforms;android-33" "build-tools;33.0.0"
 
       - name: Instalar Buildozer e dependências Python
         run: |
           pip install --upgrade pip
           pip install buildozer cython==0.29.33
 
-      - name: Cache Buildozer global (NDK, SDK, recipes)
+      - name: Cache Buildozer global
         uses: actions/cache@v4
         with:
           path: ~/.buildozer
@@ -60,7 +72,7 @@ jobs:
           restore-keys: |
             buildozer-local-${{ runner.os }}-
 
-      - name: Cache ccache (compilação C/C++)
+      - name: Cache ccache
         uses: actions/cache@v4
         with:
           path: ~/.ccache
@@ -71,6 +83,7 @@ jobs:
       - name: Compilar APK
         env:
           BUILDOZER_WARN_ON_ROOT: 0
+          ANDROID_SDK_ROOT: /home/runner/.buildozer/android/platform/android-sdk
         run: |
           buildozer -v android debug
 
