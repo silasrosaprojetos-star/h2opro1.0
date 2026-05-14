@@ -1,9 +1,9 @@
 from kivymd.app import MDApp
-from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from kivy.clock import Clock
 from kivy.properties import StringProperty, NumericProperty, ColorProperty, BooleanProperty
 from kivy.metrics import dp
+from kivy.uix.screenmanager import Screen
 import threading
 
 try:
@@ -14,203 +14,186 @@ except ImportError:
     ON_ANDROID = False
 
 KV = '''
-<EstiloBtn@Button>:
-    background_normal: ''
-    background_color: 0.2, 0.2, 0.2, 1
-    color: 1, 1, 1, 1
-    bold: True
-    font_size: "13sp"
+Screen:
+    canvas.before:
+        Color:
+            rgba: 0.1, 0.1, 0.1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
 
-MDScreen:
-    md_bg_color: 0.1, 0.1, 0.1, 1
-
-    MDBoxLayout:
+    BoxLayout:
         orientation: 'vertical'
 
         # Topo
-        MDBoxLayout:
+        BoxLayout:
             size_hint_y: None
             height: "56dp"
             padding: "12dp", "8dp"
             spacing: "8dp"
-            md_bg_color: 0.08, 0.08, 0.08, 1
+            canvas.before:
+                Color:
+                    rgba: 0.08, 0.08, 0.08, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
 
-            MDLabel:
-                text: "H2O PRO - SISTEMA SUPERVISORIO"
-                font_style: "titleMedium"
-                theme_text_color: "Custom"
-                text_color: 0, 0.8, 1, 1
-                halign: "left"
-                valign: "center"
-
-            Button:
-                text: "i"
-                size_hint_x: None
-                width: "40dp"
-                background_normal: ''
-                background_color: 0, 0, 0, 0
+            Label:
+                text: "H2O PRO - SUPERVISORIO"
                 color: 0, 0.8, 1, 1
                 bold: True
-                font_size: "20sp"
+                font_size: "14sp"
+                halign: "left"
+                valign: "center"
+                text_size: self.size
+
+            Button:
+                text: "INFO"
+                size_hint_x: None
+                width: "60dp"
+                background_normal: ''
+                background_color: 0, 0.5, 0.8, 1
+                color: 1, 1, 1, 1
+                font_size: "11sp"
                 on_release: app.mostrar_info()
 
-        # Conteudo principal
-        MDBoxLayout:
+        # Grade principal
+        BoxLayout:
             orientation: 'horizontal'
-            padding: "12dp"
-            spacing: "12dp"
+            padding: "10dp"
+            spacing: "10dp"
             size_hint_y: 1
 
-            # Card reservatorio
-            MDCard:
-                size_hint_x: 0.45
-                padding: "10dp"
-                radius: [15,]
-                md_bg_color: 0.15, 0.15, 0.15, 1
+            # Coluna reservatorio
+            BoxLayout:
+                size_hint_x: 0.42
+                orientation: 'vertical'
+                spacing: "6dp"
+                canvas.before:
+                    Color:
+                        rgba: 0.15, 0.15, 0.15, 1
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [14, 14, 14, 14]
 
-                MDBoxLayout:
+                Label:
+                    text: "NIVEL DO\\nRESERVATORIO"
+                    color: 1, 1, 1, 1
+                    bold: True
+                    font_size: "11sp"
+                    halign: "center"
+                    size_hint_y: None
+                    height: "44dp"
+
+                # Tanque
+                Widget:
+                    size_hint: None, None
+                    size: "75dp", "200dp"
+                    pos_hint: {"center_x": .5}
+                    canvas:
+                        Color:
+                            rgba: 0.3, 0.3, 0.3, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [0, 0, 12, 12]
+                        Color:
+                            rgba: 0, 0.5, 0.9, 0.85
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.width, app.nivel_grafico
+                            radius: [0, 0, 12, 12]
+
+                Label:
+                    text: ""
+                    size_hint_y: 1
+
+            # Coluna direita
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: 0.58
+                spacing: "8dp"
+
+                # Card motor
+                BoxLayout:
                     orientation: 'vertical'
-                    spacing: "6dp"
+                    size_hint_y: None
+                    height: "85dp"
+                    padding: "10dp"
+                    spacing: "4dp"
+                    canvas.before:
+                        Color:
+                            rgba: 0.12, 0.12, 0.12, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [14, 14, 14, 14]
 
-                    MDLabel:
-                        text: "NIVEL DO"
-                        halign: "center"
-                        font_style: "labelLarge"
-                        theme_text_color: "Custom"
-                        text_color: 1, 1, 1, 1
-                        size_hint_y: None
-                        height: "22dp"
-
-                    MDLabel:
-                        text: "RESERVATORIO"
-                        halign: "center"
-                        font_style: "labelSmall"
-                        theme_text_color: "Custom"
-                        text_color: 0.6, 0.6, 0.6, 1
+                    Label:
+                        text: "ESTADO DO MOTOR"
+                        color: 0.5, 0.5, 0.5, 1
+                        font_size: "10sp"
+                        halign: "left"
+                        text_size: self.size
                         size_hint_y: None
                         height: "18dp"
 
-                    Widget:
-                        size_hint: None, None
-                        size: "80dp", "210dp"
-                        pos_hint: {"center_x": .5}
-                        canvas:
-                            Color:
-                                rgba: 0.3, 0.3, 0.3, 1
-                            RoundedRectangle:
-                                pos: self.pos
-                                size: self.size
-                                radius: [0, 0, 12, 12]
-                            Color:
-                                rgba: 0, 0.5, 0.9, 0.85
-                            RoundedRectangle:
-                                pos: self.pos
-                                size: self.width, app.nivel_grafico
-                                radius: [0, 0, 12, 12]
-
-            # Coluna direita
-            MDBoxLayout:
-                orientation: 'vertical'
-                size_hint_x: 0.55
-                spacing: "10dp"
-
-                # Card motor
-                MDCard:
-                    size_hint_y: None
-                    height: "90dp"
-                    padding: "10dp"
-                    radius: [15,]
-                    md_bg_color: 0.12, 0.12, 0.12, 1
-
-                    MDBoxLayout:
-                        orientation: 'horizontal'
-                        spacing: "8dp"
-
-                        MDIcon:
-                            icon: "engine"
-                            font_size: "38sp"
-                            theme_text_color: "Custom"
-                            text_color: app.cor_bomba
-                            size_hint_x: None
-                            width: "44dp"
-                            pos_hint: {"center_y": .5}
-
-                        MDBoxLayout:
-                            orientation: 'vertical'
-                            pos_hint: {"center_y": .5}
-
-                            MDLabel:
-                                text: "ESTADO DO MOTOR"
-                                theme_text_color: "Custom"
-                                text_color: 0.5, 0.5, 0.5, 1
-                                font_style: "labelSmall"
-                                size_hint_y: None
-                                height: "18dp"
-
-                            MDLabel:
-                                text: app.status_bomba
-                                font_style: "titleSmall"
-                                bold: True
-                                theme_text_color: "Custom"
-                                text_color: app.cor_bomba
+                    Label:
+                        text: app.status_bomba
+                        color: app.cor_bomba
+                        bold: True
+                        font_size: "15sp"
+                        halign: "left"
+                        text_size: self.size
 
                 # Card sensores
-                MDCard:
+                BoxLayout:
+                    orientation: 'vertical'
                     size_hint_y: None
-                    height: "105dp"
+                    height: "100dp"
                     padding: "10dp"
-                    radius: [15,]
-                    md_bg_color: 0.12, 0.12, 0.12, 1
+                    spacing: "4dp"
+                    canvas.before:
+                        Color:
+                            rgba: 0.12, 0.12, 0.12, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [14, 14, 14, 14]
 
-                    MDBoxLayout:
-                        orientation: 'vertical'
-                        spacing: "6dp"
+                    Label:
+                        text: "SENSORES DE NIVEL"
+                        color: 0.7, 0.7, 0.7, 1
+                        font_size: "10sp"
+                        halign: "left"
+                        text_size: self.size
+                        size_hint_y: None
+                        height: "18dp"
 
-                        MDLabel:
-                            text: "SENSORES DE NIVEL"
-                            font_style: "labelMedium"
-                            theme_text_color: "Custom"
-                            text_color: 0.8, 0.8, 0.8, 1
-                            size_hint_y: None
-                            height: "18dp"
+                    Label:
+                        text: "▲  Boia Alta"
+                        color: app.cor_alto
+                        font_size: "13sp"
+                        halign: "left"
+                        text_size: self.size
+                        size_hint_y: None
+                        height: "26dp"
 
-                        MDBoxLayout:
-                            spacing: "6dp"
-                            size_hint_y: None
-                            height: "26dp"
-                            MDIcon:
-                                icon: "arrow-up-bold-circle"
-                                theme_text_color: "Custom"
-                                text_color: app.cor_alto
-                                size_hint_x: None
-                                width: "26dp"
-                            MDLabel:
-                                text: "Boia Alta"
-                                theme_text_color: "Custom"
-                                text_color: app.cor_alto
-                                font_style: "bodySmall"
+                    Label:
+                        text: "▼  Boia Baixa"
+                        color: app.cor_baixo
+                        font_size: "13sp"
+                        halign: "left"
+                        text_size: self.size
+                        size_hint_y: None
+                        height: "26dp"
 
-                        MDBoxLayout:
-                            spacing: "6dp"
-                            size_hint_y: None
-                            height: "26dp"
-                            MDIcon:
-                                icon: "arrow-down-bold-circle"
-                                theme_text_color: "Custom"
-                                text_color: app.cor_baixo
-                                size_hint_x: None
-                                width: "26dp"
-                            MDLabel:
-                                text: "Boia Baixa"
-                                theme_text_color: "Custom"
-                                text_color: app.cor_baixo
-                                font_style: "bodySmall"
-
-                # Botao Bluetooth — Button puro, sem MDButton
+                # Botao Bluetooth
                 Button:
                     text: app.texto_conexao
-                    size_hint_x: 1
-                    height: "46dp"
+                    size_hint_y: None
+                    height: "44dp"
                     background_normal: ''
                     background_color: app.cor_conexao
                     color: 1, 1, 1, 1
@@ -218,31 +201,32 @@ MDScreen:
                     font_size: "12sp"
                     on_release: app.alternar_conexao()
 
-        # Botoes LIGAR / DESLIGAR — Button puro, sem MDButton
-        MDBoxLayout:
+                Widget:
+                    size_hint_y: 1
+
+        # Botoes LIGAR / DESLIGAR
+        BoxLayout:
             size_hint_y: None
-            height: "68dp"
-            padding: "12dp", "8dp"
-            spacing: "12dp"
+            height: "65dp"
+            padding: "10dp", "6dp"
+            spacing: "10dp"
 
             Button:
                 text: "LIGAR"
-                size_hint_x: 0.5
                 background_normal: ''
                 background_color: 0, 0.7, 0.3, 1
                 color: 1, 1, 1, 1
                 bold: True
-                font_size: "14sp"
+                font_size: "15sp"
                 on_release: app.enviar_comando('L')
 
             Button:
                 text: "DESLIGAR"
-                size_hint_x: 0.5
                 background_normal: ''
                 background_color: 0.8, 0.1, 0.1, 1
                 color: 1, 1, 1, 1
                 bold: True
-                font_size: "14sp"
+                font_size: "15sp"
                 on_release: app.enviar_comando('D')
 '''
 
@@ -357,11 +341,11 @@ class SupervisorioTechApp(MDApp):
                     self.cor_bomba = [1, 0.2, 0.2, 1]
 
                 if st_alto == "COM_AGUA":
-                    self.nivel_grafico = dp(210)
+                    self.nivel_grafico = dp(200)
                     self.cor_alto = [0, 0.8, 1, 1]
                     self.cor_baixo = [0, 0.8, 1, 1]
                 elif st_baixo == "COM_AGUA":
-                    self.nivel_grafico = dp(105)
+                    self.nivel_grafico = dp(100)
                     self.cor_alto = [0.3, 0.3, 0.3, 1]
                     self.cor_baixo = [0, 0.8, 1, 1]
                 else:
@@ -380,18 +364,15 @@ class SupervisorioTechApp(MDApp):
                 pass
 
     def mostrar_info(self):
-        from kivymd.uix.snackbar import MDSnackbar
-        from kivymd.uix.label import MDLabel
-        snack = MDSnackbar(
-            MDLabel(text="H2O Pro v1.0 - Monitoramento Ativo"),
-            y=dp(24),
-            pos_hint={"center_x": 0.5},
-            size_hint_x=0.9,
-        )
-        snack.open()
+        self.status_bomba = "H2O Pro v1.0"
+        Clock.schedule_once(lambda dt: self.resetar_status(), 2)
+
+    def resetar_status(self):
+        if not self.conectado:
+            self.status_bomba = "DESCONECTADO"
 
     def atualizar_interface_simulada(self):
-        self.nivel_grafico = dp(105)
+        self.nivel_grafico = dp(100)
         self.cor_baixo = [0, 0.8, 1, 1]
         self.cor_alto = [0.3, 0.3, 0.3, 1]
         self.status_bomba = "SIMULACAO ON"
