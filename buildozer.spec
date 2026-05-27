@@ -12,8 +12,10 @@ package.domain = org.silas
 # (str) Source code where the main.py lives
 source.dir = .
 
+# (str) Application versioning
+version = 1.0
+
 # (list) Application requirements
-# IMPORTANTE: Coloque aqui as bibliotecas que seu código Python usa (kivy é obrigatório)
 requirements = python3,kivy
 
 # (str) Supported orientation (landscape, sensor, portrait or all)
