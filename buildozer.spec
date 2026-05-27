@@ -1,31 +1,41 @@
-[app]
+name: Build Android App
 
-title = H2O Pro
-package.name = h2opro
-package.domain = org.silasrosa
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
 
-source.dir = .
-source.include_exts = py,png,jpg,kv,atlas,json
+jobs:
+  build:
+    runs-on: ubuntu-22.04
 
-version = 1.0
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
 
-requirements = hostpython3==3.11.6,python3==3.11.6,kivy==2.3.0,kivymd==2.0.0,requests,urllib3,certifi,chardet,idna,six,filetype
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-orientation = portrait
-fullscreen = 0
+      - name: Instalar dependências do sistema
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libltdl-dev libffi-dev libssl-dev python3-dev zip unzip
+          pip install --upgrade pip
+          pip install --upgrade buildozer cython virtualenv
 
-android.permissions = BLUETOOTH,BLUETOOTH_ADMIN,BLUETOOTH_CONNECT,BLUETOOTH_SCAN,ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION
+      - name: Compilar o APK com Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v2
+        id: buildozer
+        with:
+          command: buildozer android debug
+          buildozer_version: master
 
-android.api = 33
-android.minapi = 21
-android.ndk = 25b
-android.sdk = 33
-android.ndk_api = 21
-
-android.archs = arm64-v8a
-
-android.allow_backup = True
-
-[buildozer]
-log_level = 2
-warn_on_root = 1
+      - name: Fazer upload do APK gerado
+        uses: actions/upload-artifact@v4
+        with:
+          name: meu-aplicativo-apk
+          path: bin/*.apk
