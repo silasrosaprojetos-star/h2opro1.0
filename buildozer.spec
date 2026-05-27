@@ -1,41 +1,27 @@
-name: Build Android App
+[app]
 
-on:
-  push:
-    branches:
-      - main
-      - master
-  pull_request:
+# (str) Title of your application
+title = H2O Pro
 
-jobs:
-  build:
-    runs-on: ubuntu-22.04
+# (str) Package name
+package.name = h2opro
 
-    steps:
-      - name: Checkout do código
-        uses: actions/checkout@v4
+# (str) Package domain (needed for android/ios packaging)
+package.domain = org.silas
 
-      - name: Configurar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+# (str) Source code where the main.py lives
+source.dir = .
 
-      - name: Instalar dependências do sistema
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential libltdl-dev libffi-dev libssl-dev python3-dev zip unzip
-          pip install --upgrade pip
-          pip install --upgrade buildozer cython virtualenv
+# (list) Application requirements
+# IMPORTANTE: Coloque aqui as bibliotecas que seu código Python usa (kivy é obrigatório)
+requirements = python3,kivy
 
-      - name: Compilar o APK com Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v2
-        id: buildozer
-        with:
-          command: buildozer android debug
-          buildozer_version: master
+# (str) Supported orientation (landscape, sensor, portrait or all)
+orientation = portrait
 
-      - name: Fazer upload do APK gerado
-        uses: actions/upload-artifact@v4
-        with:
-          name: meu-aplicativo-apk
-          path: bin/*.apk
+# (bool) Indicate if the application should be fullscreen or not
+fullscreen = 1
+
+# --- Configurações para não dar erro no GitHub Actions ---
+# Aceitar as licenças do SDK do Android automaticamente
+android.accept_sdk_license = True
