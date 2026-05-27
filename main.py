@@ -3,7 +3,7 @@
 #  Farad Automação
 #  Compatível com firmware H2O Pro v1.0 (Arduino UNO + HC-05)
 #  Protocolo RX: "BOMBA;BOIA_BAIXA;BOIA_ALTA\n"
-#  Protocolo TX: 'L' = Ligar | 'D' = Desligar
+#  Protocolo TX: 'L' = Ligar | 'D' = Desligar | 'R' = Reset
 # ============================================================
 
 from kivymd.app import MDApp
@@ -270,7 +270,7 @@ Screen:
                             halign: "left"
                             text_size: self.size
 
-                # Card log (últimas mensagens)
+                # Card log
                 BoxLayout:
                     orientation: 'vertical'
                     padding: "8dp"
@@ -291,21 +291,18 @@ Screen:
                         size_hint_y: None
                         height: "16dp"
                     Label:
-                        id: log1
                         text: app.log_linha1
                         color: 0.5, 0.9, 0.5, 1
                         font_size: "9sp"
                         halign: "left"
                         text_size: self.size
                     Label:
-                        id: log2
                         text: app.log_linha2
                         color: 0.5, 0.9, 0.5, 1
                         font_size: "9sp"
                         halign: "left"
                         text_size: self.size
                     Label:
-                        id: log3
                         text: app.log_linha3
                         color: 0.5, 0.9, 0.5, 1
                         font_size: "9sp"
@@ -324,12 +321,35 @@ Screen:
                     font_size: "11sp"
                     on_release: app.alternar_conexao()
 
-        # ── Rodapé: LIGAR / DESLIGAR ─────────────────────────
+        # ── Banner de erro (visível só em FALHA) ─────────────
+        BoxLayout:
+            size_hint_y: None
+            height: "48dp" if app.em_falha else "0dp"
+            opacity: 1 if app.em_falha else 0
+            padding: "10dp", "6dp"
+            spacing: "8dp"
+            canvas.before:
+                Color:
+                    rgba: 0.55, 0.05, 0.05, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Label:
+                text: "⚠  FALHA: sensor superior ativo sem sensor inferior!"
+                color: 1, 0.85, 0.85, 1
+                bold: True
+                font_size: "10sp"
+                halign: "center"
+                valign: "center"
+                text_size: self.size
+
+        # ── Rodapé: LIGAR / DESLIGAR / RESET ─────────────────
         BoxLayout:
             size_hint_y: None
             height: "62dp"
             padding: "10dp", "6dp"
-            spacing: "10dp"
+            spacing: "8dp"
             canvas.before:
                 Color:
                     rgba: 0.05, 0.05, 0.05, 1
@@ -343,7 +363,7 @@ Screen:
                 background_color: 0, 0.72, 0.32, 1
                 color: 1, 1, 1, 1
                 bold: True
-                font_size: "14sp"
+                font_size: "13sp"
                 on_release: app.enviar_comando('L')
 
             Button:
@@ -352,29 +372,42 @@ Screen:
                 background_color: 0.78, 0.1, 0.1, 1
                 color: 1, 1, 1, 1
                 bold: True
-                font_size: "14sp"
+                font_size: "13sp"
                 on_release: app.enviar_comando('D')
+
+            Button:
+                text: "↺  RESET"
+                size_hint_x: None
+                width: "90dp"
+                background_normal: ''
+                background_color: app.cor_btn_reset
+                color: 1, 1, 1, 1
+                bold: True
+                font_size: "12sp"
+                on_release: app.enviar_reset()
 '''
 
 # ============================================================
 class H2OProApp(MDApp):
 
     # ── Propriedades reativas ────────────────────────────────
-    status_bomba   = StringProperty("DESCONECTADO")
-    cor_bomba      = ColorProperty([0.5, 0.5, 0.5, 1])
-    nivel_grafico  = NumericProperty(0)
-    cor_agua       = ColorProperty([0, 0.3, 0.6, 0.85])
-    pct_nivel      = StringProperty("- %")
-    cor_alto       = ColorProperty([0.25, 0.25, 0.25, 1])
-    cor_baixo      = ColorProperty([0.25, 0.25, 0.25, 1])
-    texto_conexao  = StringProperty("CONECTAR BLUETOOTH")
-    cor_conexao    = ColorProperty([0.18, 0.18, 0.18, 1])
-    conectado      = BooleanProperty(False)
-    nome_estado    = StringProperty("AGUARDANDO CONEXÃO")
-    cor_estado     = ColorProperty([0.5, 0.5, 0.5, 1])
-    log_linha1     = StringProperty("")
-    log_linha2     = StringProperty("")
-    log_linha3     = StringProperty("")
+    status_bomba     = StringProperty("DESCONECTADO")
+    cor_bomba        = ColorProperty([0.5, 0.5, 0.5, 1])
+    nivel_grafico    = NumericProperty(0)
+    cor_agua         = ColorProperty([0, 0.3, 0.6, 0.85])
+    pct_nivel        = StringProperty("- %")
+    cor_alto         = ColorProperty([0.25, 0.25, 0.25, 1])
+    cor_baixo        = ColorProperty([0.25, 0.25, 0.25, 1])
+    texto_conexao    = StringProperty("CONECTAR BLUETOOTH")
+    cor_conexao      = ColorProperty([0.18, 0.18, 0.18, 1])
+    conectado        = BooleanProperty(False)
+    nome_estado      = StringProperty("AGUARDANDO CONEXÃO")
+    cor_estado       = ColorProperty([0.5, 0.5, 0.5, 1])
+    log_linha1       = StringProperty("")
+    log_linha2       = StringProperty("")
+    log_linha3       = StringProperty("")
+    em_falha         = BooleanProperty(False)
+    cor_btn_reset    = ColorProperty([0.25, 0.25, 0.25, 1])
 
     # LEDs
     cor_led_verde    = ColorProperty([0.15, 0.15, 0.15, 1])
@@ -468,6 +501,8 @@ class H2OProApp(MDApp):
             self.cor_agua         = [0, 0.3, 0.6, 0.85]
             self.nome_estado      = "DESCONECTADO"
             self.cor_estado       = [0.5, 0.5, 0.5, 1]
+            self.em_falha         = False
+            self.cor_btn_reset    = [0.25, 0.25, 0.25, 1]
             self.cor_led_verde    = [0.15, 0.15, 0.15, 1]
             self.cor_led_amarelo  = [0.15, 0.15, 0.15, 1]
             self.cor_led_vermelho = [0.15, 0.15, 0.15, 1]
@@ -500,22 +535,19 @@ class H2OProApp(MDApp):
         Campo 1 - boia baixa: COM_AGUA | SEM_AGUA
         Campo 2 - boia alta:  COM_AGUA | SEM_AGUA
         """
-        # Log apenas pacotes de estado (não os de debug verbose)
         if ';' not in pacote:
             self._add_log(pacote[:38])
             return
-
         try:
             partes = pacote.split(';')
             if len(partes) != 3:
                 return
-
             st_bomba, st_baixo, st_alto = partes
-            bomba_ligada  = (st_bomba == "LIGADA")
+            bomba_ligada   = (st_bomba == "LIGADA")
             baixo_com_agua = (st_baixo == "COM_AGUA")
             alto_com_agua  = (st_alto  == "COM_AGUA")
 
-            # ── Inferir estado pelo combinação dos sensores ──
+            # Inferir estado pela combinação dos sensores
             if alto_com_agua and not baixo_com_agua:
                 estado = "FALHA"
             elif not bomba_ligada and not baixo_com_agua and not alto_com_agua:
@@ -529,16 +561,17 @@ class H2OProApp(MDApp):
             elif not bomba_ligada and baixo_com_agua and not alto_com_agua:
                 estado = "ESVAZIANDO"
             else:
-                estado = self._estado_arduino  # mantém se ambíguo
+                estado = self._estado_arduino
 
             self._estado_arduino = estado
             self._atualizar_ui(estado, bomba_ligada, baixo_com_agua, alto_com_agua)
-
         except Exception:
             pass
 
+    # ── Atualizar toda a interface ────────────────────────────
     def _atualizar_ui(self, estado, bomba, baixo, alto):
-        # ── Status da bomba ──
+
+        # Status da bomba
         if bomba:
             self.status_bomba = "EM OPERAÇÃO"
             self.cor_bomba    = [0, 1, 0.55, 1]
@@ -546,53 +579,53 @@ class H2OProApp(MDApp):
             self.status_bomba = "PARADA"
             self.cor_bomba    = [1, 0.25, 0.25, 1]
 
-        # ── Sensores ──
+        # Sensores
         self.cor_baixo = [0, 0.8, 1, 1] if baixo else [1, 0.55, 0, 1]
         self.cor_alto  = [0, 0.8, 1, 1] if alto  else [0.25, 0.25, 0.25, 1]
 
-        # ── Nível gráfico + cor da água ──
+        # Nível gráfico + cor da água
         if alto and baixo:
-            nivel_pct = 90
+            nivel_pct     = 90
             self.cor_agua = [0, 0.5, 0.9, 0.9]
         elif baixo:
-            nivel_pct = 48
+            nivel_pct     = 48
             self.cor_agua = [0, 0.4, 0.75, 0.85]
         else:
-            nivel_pct = 5
+            nivel_pct     = 5
             self.cor_agua = [0, 0.2, 0.5, 0.7]
 
         self.nivel_grafico = dp(190) * nivel_pct / 100
         self.pct_nivel     = f"{nivel_pct} %"
 
-        # ── Nome e cor do estado ──
+        # Nome e cor do estado na topbar
         mapa_estado = {
-            "VAZIO":     ("VAZIO",           [0.55, 0.55, 0.55, 1]),
-            "ACIONANDO": ("ACIONANDO...",    [1,    0.75, 0,    1]),
-            "ENCHENDO":  ("ENCHENDO",        [0,    0.8,  1,    1]),
-            "CHEIO":     ("CHEIO  ✔",        [0,    1,    0.45, 1]),
-            "ESVAZIANDO":("ESVAZIANDO",      [0.3,  0.7,  1,    1]),
-            "FALHA":     ("⚠  FALHA",        [1,    0.2,  0.2,  1]),
+            "VAZIO":      ("VAZIO",          [0.55, 0.55, 0.55, 1]),
+            "ACIONANDO":  ("ACIONANDO...",   [1,    0.75, 0,    1]),
+            "ENCHENDO":   ("ENCHENDO",       [0,    0.8,  1,    1]),
+            "CHEIO":      ("CHEIO  ✔",       [0,    1,    0.45, 1]),
+            "ESVAZIANDO": ("ESVAZIANDO",     [0.3,  0.7,  1,    1]),
+            "FALHA":      ("⚠  FALHA",       [1,    0.2,  0.2,  1]),
         }
         nome, cor = mapa_estado.get(estado, ("AGUARDANDO", [0.5, 0.5, 0.5, 1]))
         self.nome_estado = nome
         self.cor_estado  = cor
 
-        # ── LEDs ──
-        # Verde fixo = CHEIO | Verde pisca = ESVAZIANDO
-        # Amarelo fixo = ENCHENDO | Amarelo pisca = ACIONANDO
-        # Vermelho pisca = FALHA
-        self._led_v_fixo    = (estado == "CHEIO")
-        self._led_v_pisca   = (estado == "ESVAZIANDO")
-        self._led_a_fixo    = (estado == "ENCHENDO")
-        self._led_a_pisca   = (estado == "ACIONANDO")
-        self._led_r_pisca   = (estado == "FALHA")
+        # Banner de erro + botão reset
+        self.em_falha      = (estado == "FALHA")
+        self.cor_btn_reset = [0.85, 0.3, 0, 1] if self.em_falha else [0.25, 0.25, 0.25, 1]
+
+        # Flags dos LEDs
+        self._led_v_fixo  = (estado == "CHEIO")
+        self._led_v_pisca = (estado == "ESVAZIANDO")
+        self._led_a_fixo  = (estado == "ENCHENDO")
+        self._led_a_pisca = (estado == "ACIONANDO")
+        self._led_r_pisca = (estado == "FALHA")
 
     # ── Piscamento de LEDs (clock 0.5s) ──────────────────────
     def _piscar_leds(self, dt):
         self._pisca_tick = not self._pisca_tick
         apagado = [0.12, 0.12, 0.12, 1]
 
-        # Verde
         if getattr(self, '_led_v_fixo', False):
             self.cor_led_verde = [0, 1, 0.35, 1]
         elif getattr(self, '_led_v_pisca', False):
@@ -600,7 +633,6 @@ class H2OProApp(MDApp):
         else:
             self.cor_led_verde = apagado
 
-        # Amarelo
         if getattr(self, '_led_a_fixo', False):
             self.cor_led_amarelo = [1, 0.75, 0, 1]
         elif getattr(self, '_led_a_pisca', False):
@@ -608,7 +640,6 @@ class H2OProApp(MDApp):
         else:
             self.cor_led_amarelo = apagado
 
-        # Vermelho
         if getattr(self, '_led_r_pisca', False):
             self.cor_led_vermelho = [1, 0.18, 0.18, 1] if self._pisca_tick else apagado
         else:
@@ -620,7 +651,6 @@ class H2OProApp(MDApp):
             self._add_log("Sem conexão Bluetooth.")
             return
         if not ON_ANDROID:
-            # Modo teste: simula o envio
             self._add_log(f"CMD enviado: '{comando}'")
             return
         try:
@@ -629,6 +659,22 @@ class H2OProApp(MDApp):
             self._add_log(f"CMD enviado: '{comando}'")
         except Exception:
             self._add_log("Erro ao enviar comando.")
+
+    # ── Reset remoto (envia 'R' ao Arduino) ──────────────────
+    def enviar_reset(self):
+        if not self.conectado:
+            self._add_log("Sem conexão Bluetooth.")
+            return
+        self._add_log("RESET enviado ao Arduino.")
+        if not ON_ANDROID:
+            self.em_falha      = False
+            self.cor_btn_reset = [0.25, 0.25, 0.25, 1]
+            return
+        try:
+            cmd_bytes = autoclass('java.lang.String')('R').getBytes()
+            self.output_stream.write(cmd_bytes)
+        except Exception:
+            self._add_log("Erro ao enviar RESET.")
 
     # ── Log de 3 linhas rolante ───────────────────────────────
     def _add_log(self, msg):
@@ -644,7 +690,6 @@ class H2OProApp(MDApp):
     def _modo_teste(self):
         self._set_conectado(True)
         self._add_log("Modo teste ativo.")
-        # Simula pacote: bomba ligada, boia baixa com água
         Clock.schedule_once(
             lambda dt: self._processar_pacote("LIGADA;COM_AGUA;SEM_AGUA"), 1
         )
