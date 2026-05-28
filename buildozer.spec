@@ -16,7 +16,7 @@ source.dir = .
 version = 1.0
 
 # (list) Application requirements
-requirements = python3,kivy
+requirements = python3,kivy,kivymd
 
 # (str) Supported orientation (landscape, sensor, portrait or all)
 orientation = portrait
