@@ -1,6 +1,6 @@
 # ============================================================
 #  H2O Pro v1.1 - Supervisório Bluetooth
-#  Farad Automação
+#  Farad Automação / S.ROSA ENGENHARIA.
 #  Compatível com firmware H2O Pro v1.0 (Arduino UNO + HC-05)
 #  Protocolo RX: "BOMBA;BOIA_BAIXA;BOIA_ALTA\n"
 #  Protocolo TX: 'L' = Ligar | 'D' = Desligar | 'R' = Reset
@@ -697,7 +697,7 @@ class H2OProApp(MDApp):
     # ── Botão INFO ────────────────────────────────────────────
     def mostrar_info(self):
         self._add_log("H2O Pro v1.1")
-        self._add_log("Farad Automação")
+        self._add_log("Farad Automação, SROSA Engenharia.")
         self._add_log(f"Estado: {self._estado_arduino}")
 
 
