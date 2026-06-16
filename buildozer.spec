@@ -18,7 +18,10 @@ android.minapi = 24
 android.ndk = 25b
 android.archs = arm64-v8a
 
-# Otimizações para o Buildozer usar o Gradle
+# Configurações obrigatórias para forçar o uso do Gradle
+android.add_gradle_dependencies = True
+android.gradle_dependencies = 
+
 android.allow_backup = True
 android.accept_catch_all = True
 android.accept_sdk_license = True
