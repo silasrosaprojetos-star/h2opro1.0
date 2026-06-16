@@ -6,7 +6,12 @@
 #  Protocolo TX: 'L' = Ligar | 'D' = Desligar | 'R' = Reset
 # ============================================================
 
-import time
+
+    # ============================================================
+#  H2O Pro v1.1 - Supervisório Bluetooth
+#  Farad Automação / S.ROSA ENGENHARIA.
+# ============================================================
+
 import threading
 from kivymd.app import MDApp
 from kivy.lang import Builder
@@ -21,7 +26,6 @@ try:
 except ImportError:
     ON_ANDROID = False
 
-# ============================================================
 KV = '''
 Screen:
     canvas.before:
@@ -33,63 +37,35 @@ Screen:
 
     BoxLayout:
         orientation: 'vertical'
-        spacing: 0
-
-        # ── Topbar ──────────────────────────────────────────
+        
+        # ── Topbar ──
         BoxLayout:
             size_hint_y: None
             height: "52dp"
             padding: "12dp", "8dp"
-            spacing: "8dp"
             canvas.before:
                 Color:
                     rgba: 0.05, 0.05, 0.05, 1
                 Rectangle:
                     pos: self.pos
                     size: self.size
-
             Label:
                 text: "H2O PRO"
                 color: 0, 0.8, 1, 1
                 bold: True
-                font_size: "16sp"
-                halign: "left"
-                valign: "center"
-                text_size: self.size
-                size_hint_x: None
-                width: "90dp"
-
-            Label:
-                text: app.nome_estado
-                color: app.cor_estado
-                bold: True
-                font_size: "11sp"
-                halign: "center"
-                valign: "center"
-                text_size: self.size
-
             Button:
                 text: "INFO"
-                size_hint_x: None
-                width: "52dp"
-                background_normal: ''
-                background_color: 0, 0.4, 0.7, 1
-                color: 1, 1, 1, 1
-                font_size: "10sp"
                 on_release: app.mostrar_info()
 
-        # ── Corpo principal ──────────────────────────────────
+        # ── Corpo Principal ──
         BoxLayout:
-            orientation: 'horizontal'
             padding: "10dp"
             spacing: "10dp"
-            size_hint_y: 1
-
-            # Coluna esquerda - reservatório
+            
+            # Reservatório
             BoxLayout:
-                size_hint_x: 0.40
                 orientation: 'vertical'
-                spacing: "6dp"
+                size_hint_x: 0.4
                 canvas.before:
                     Color:
                         rgba: 0.13, 0.13, 0.13, 1
@@ -97,126 +73,88 @@ Screen:
                         pos: self.pos
                         size: self.size
                         radius: [14]
-
                 Label:
-                    text: "NÍVEL DO\\nRESERVATÓRIO"
-                    color: 1, 1, 1, 1
-                    bold: True
-                    font_size: "10sp"
-                    halign: "center"
-                    size_hint_y: None
-                    height: "40dp"
-
-                # Tanque animado
+                    text: "NIVEL"
                 Widget:
-                    size_hint: None, None
-                    size: "72dp", "190dp"
-                    pos_hint: {"center_x": .5}
                     canvas:
                         Color:
-                            rgba: 0.25, 0.25, 0.25, 1
-                        RoundedRectangle:
-                            pos: self.pos
-                            size: self.size
-                            radius: [0, 0, 10, 10]
-                        Color:
-                            rgba: app.cor_agua
-                        RoundedRectangle:
-                            pos: self.pos
+                            rgba: 0, 0.5, 0.9, 0.85
+                        Rectangle:
+                            pos: self.x, self.y
                             size: self.width, app.nivel_grafico
-                            radius: [0, 0, 10, 10]
-                        # Linha boia superior
-                        Color:
-                            rgba: 1, 0.3, 0.3, 0.8
-                        Rectangle:
-                            pos: self.x, self.y + self.height * 0.80
-                            size: self.width, dp(1.5)
-                        # Linha boia inferior
-                        Color:
-                            rgba: 1, 0.7, 0, 0.8
-                        Rectangle:
-                            pos: self.x, self.y + self.height * 0.35
-                            size: self.width, dp(1.5)
 
-                Label:
-                    text: app.pct_nivel
-                    color: 0, 0.8, 1, 1
-                    bold: True
-                    font_size: "14sp"
-                    halign: "center"
-                    size_hint_y: None
-                    height: "28dp"
-
-                # LEDs indicadores
-                BoxLayout:
-                    size_hint_y: None
-                    height: "28dp"
-                    spacing: "8dp"
-                    padding: "12dp", 0
-                    Label:
-                        text: "●"
-                        color: app.cor_led_verde
-                        font_size: "18sp"
-                        halign: "center"
-                    Label:
-                        text: "●"
-                        color: app.cor_led_amarelo
-                        font_size: "18sp"
-                        halign: "center"
-                    Label:
-                        text: "●"
-                        color: app.cor_led_vermelho
-                        font_size: "18sp"
-                        halign: "center"
-
-                Label:
-                    text: "V    A    R"
-                    color: 0.4, 0.4, 0.4, 1
-                    font_size: "9sp"
-                    halign: "center"
-                    size_hint_y: None
-                    height: "16dp"
-
-                Widget:
-                    size_hint_y: 1
-
-            # Coluna direita
+            # Controles
             BoxLayout:
                 orientation: 'vertical'
-                size_hint_x: 0.60
-                spacing: "8dp"
+                Button:
+                    text: "LIGAR"
+                    on_release: app.enviar_comando('L')
+                Button:
+                    text: "DESLIGAR"
+                    on_release: app.enviar_comando('D')
+                Button:
+                    text: app.texto_conexao
+                    on_release: app.alternar_conexao()
+'''
 
-                # Card bomba
-                BoxLayout:
-                    orientation: 'vertical'
-                    size_hint_y: None
-                    height: "76dp"
-                    padding: "10dp"
-                    spacing: "2dp"
-                    canvas.before:
-                        Color:
-                            rgba: 0.11, 0.11, 0.11, 1
-                        RoundedRectangle:
-                            pos: self.pos
-                            size: self.size
-                            radius: [12]
-                    Label:
-                        text: "ESTADO DA BOMBA"
-                        color: 0.5, 0.5, 0.5, 1
-                        font_size: "9sp"
-                        halign: "left"
-                        text_size: self.size
-                        size_hint_y: None
-                        height: "18dp"
-                    Label:
-                        text: app.status_bomba
-                        color: app.cor_bomba
-                        bold: True
-                        font_size: "14sp"
-                        halign: "left"
-                        text_size: self.size
+class SupervisorioTechApp(MDApp):
+    # Propriedades para o Kivy acessar
+    nome_estado = StringProperty("STATUS")
+    cor_estado = ColorProperty([1, 1, 1, 1])
+    status_bomba = StringProperty("DESCONECTADO")
+    cor_bomba = ColorProperty([0.5, 0.5, 0.5, 1])
+    nivel_grafico = NumericProperty(0)
+    pct_nivel = StringProperty("0%")
+    texto_conexao = StringProperty("CONECTAR")
+    cor_conexao = ColorProperty([0.2, 0.2, 0.2, 1])
+    conectado = BooleanProperty(False)
+    cor_agua = ColorProperty([0, 0.5, 0.9, 0.85])
+    cor_led_verde = ColorProperty([0.2, 0.2, 0.2, 1])
+    cor_led_amarelo = ColorProperty([0.2, 0.2, 0.2, 1])
+    cor_led_vermelho = ColorProperty([0.2, 0.2, 0.2, 1])
 
-                # Card sensores
-                BoxLayout:
-                    orientation: 'vertical'
-                    size_hint
+    def build(self):
+        self.socket_bluetooth = None
+        self.input_stream = None
+        self.output_stream = None
+        return Builder.load_string(KV)
+
+    def on_start(self):
+        if ON_ANDROID:
+            from android.permissions import request_permissions, Permission
+            request_permissions([Permission.BLUETOOTH, Permission.BLUETOOTH_ADMIN, 
+                                 Permission.BLUETOOTH_CONNECT, Permission.BLUETOOTH_SCAN,
+                                 Permission.ACCESS_FINE_LOCATION])
+
+    def alternar_conexao(self):
+        if not self.conectado:
+            self.conectar_bluetooth()
+        else:
+            self.desconectar_bluetooth()
+
+    def conectar_bluetooth(self):
+        # Lógica de conexão (substitua o MAC pelo do seu HC-05)
+        try:
+            BluetoothAdapter = autoclass('android.bluetooth.BluetoothAdapter')
+            adapter = BluetoothAdapter.getDefaultAdapter()
+            device = adapter.getRemoteDevice("00:14:03:06:12:84")
+            UUID = autoclass('java.util.UUID')
+            spp_uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
+            self.socket_bluetooth = device.createRfcommSocketToServiceRecord(spp_uuid)
+            self.socket_bluetooth.connect()
+            self.input_stream = self.socket_bluetooth.getInputStream()
+            self.output_stream = self.socket_bluetooth.getOutputStream()
+            self.conectado = True
+            self.texto_conexao = "DESCONECTAR"
+        except Exception as e:
+            self.status_bomba = "ERRO"
+
+    def enviar_comando(self, comando):
+        if self.output_stream:
+            self.output_stream.write(comando.encode('utf-8'))
+
+    def mostrar_info(self):
+        self.status_bomba = "H2O Pro v1.1"
+
+if __name__ == '__main__':
+    SupervisorioTechApp().run()
