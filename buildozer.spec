@@ -11,6 +11,8 @@ android.permissions = BLUETOOTH,BLUETOOTH_ADMIN,BLUETOOTH_CONNECT,BLUETOOTH_SCAN
 android.api = 33
 android.minapi = 24
 android.ndk = 25b
+# Focando apenas em uma arquitetura para economizar RAM
+android.archs = arm64-v8a
 android.gradle_dependencies = 
 android.skip_update = False
 android.accept_sdk_license = True
