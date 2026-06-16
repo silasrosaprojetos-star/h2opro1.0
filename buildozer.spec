@@ -16,12 +16,11 @@ android.permissions = BLUETOOTH, BLUETOOTH_ADMIN, BLUETOOTH_CONNECT, BLUETOOTH_S
 android.api = 33
 android.minapi = 24
 android.ndk = 25b
-android.archs = arm64-v8a, armeabi-v7a
+# Arquitetura travada em 64-bits para garantir estabilidade da compilação
+android.archs = arm64-v8a
 
 android.allow_backup = True
 android.accept_catch_all = True
-
-# A LINHA QUE RESOLVE O ERRO DO AIDL:
 android.accept_sdk_license = True
 
 [buildozer]
