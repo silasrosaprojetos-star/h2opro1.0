@@ -16,12 +16,12 @@ android.permissions = BLUETOOTH, BLUETOOTH_ADMIN, BLUETOOTH_CONNECT, BLUETOOTH_S
 android.api = 33
 android.minapi = 24
 android.ndk = 25b
-android.archs = arm64-v8a
 
-# Configurações obrigatórias para forçar o uso do Gradle
+# Alterado para incluir as duas arquiteturas e resolver conflitos de bibliotecas
+android.archs = armeabi-v7a, arm64-v8a
+
 android.add_gradle_dependencies = True
 android.gradle_dependencies = 
-
 android.allow_backup = True
 android.accept_catch_all = True
 android.accept_sdk_license = True
