@@ -38,7 +38,8 @@ jobs:
 
       - name: Build with Buildozer
         run: |
-          buildozer clean
+          # Comando correto para limpar distribuições antigas antes do build
+          buildozer distclean
           buildozer android debug
 
       - name: Upload APK
