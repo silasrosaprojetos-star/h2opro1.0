@@ -30,7 +30,6 @@ jobs:
         run: |
           rm -rf .buildozer
           export GRADLE_OPTS="-Dorg.gradle.daemon=false"
-          # O timeout de 1200s (20 min) evita encerramento precoce
           timeout 1200s buildozer android debug
 
       - name: Upload APK
