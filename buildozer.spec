@@ -10,7 +10,6 @@ package.name = h2opro
 package.domain = org.silasrosaprojetos
 
 # (str) Diretório onde o código-fonte (main.py) está localizado
-# O ponto significa "na pasta atual". (Isso resolve o seu erro do GitHub Actions)
 source.dir = .
 
 # (list) Extensões de arquivos que devem ser incluídos no aplicativo
@@ -20,7 +19,7 @@ source.include_exts = py,png,jpg,kv,atlas,ttf,html
 version = 1.0
 
 # (list) Dependências do seu aplicativo (bibliotecas Python necessárias)
-# Se você usa KivyMD, adicione aqui ex: python3,kivy,kivymd
+# Se você usa KivyMD, não se esqueça de adicionar aqui! Ex: python3,kivy,kivymd
 requirements = python3,kivy
 
 # (str) Orientação da tela (portrait = em pé, landscape = deitado, all = todas)
@@ -34,8 +33,10 @@ fullscreen = 0
 #
 
 # (list) Permissões que o aplicativo precisa
-# INTERNET é padrão se o app precisar carregar algo online
 android.permissions = INTERNET
+
+# (bool) Aceitar automaticamente as licenças do Android SDK (Resolve o erro "Accept? (y/N)")
+android.accept_sdk_license = True
 
 # (int) API alvo do Android (o Buildozer geralmente cuida disso sozinho se comentado)
 # android.api = 31
@@ -43,7 +44,7 @@ android.permissions = INTERNET
 # (int) API mínima suportada (Buildozer cuida disso se comentado)
 # android.minapi = 21
 
-# (str) Arquiteturas suportadas do Android (importante para rodar em celulares novos e antigos)
+# (str) Arquiteturas suportadas do Android
 android.archs = arm64-v8a, armeabi-v7a
 
 # (bool) Permite backup do aplicativo no Android
