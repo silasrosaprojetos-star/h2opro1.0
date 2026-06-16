@@ -29,10 +29,5 @@ jobs:
       - name: Build with Buildozer
         run: |
           rm -rf .buildozer
-          buildozer -v android debug
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: H2O-Pro-APK
-          path: bin/*.apk
+          export GRADLE_OPTS="-Dorg.gradle.daemon=false"
+          buildozer android debug
