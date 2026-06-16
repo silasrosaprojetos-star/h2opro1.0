@@ -1,49 +1,28 @@
-name: Build Android App
+[app]
+title = H2O Pro
+package.name = h2opro
+package.domain = org.silas
+source.dir = .
+source.include_exts = py,png,jpg,kv,atlas
+version = 1.0
 
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
+requirements = python3,kivy,kivymd,jnius,android
 
-jobs:
-  build:
-    runs-on: ubuntu-22.04
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+orientation = portrait
+fullscreen = 0
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+android.permissions = BLUETOOTH, BLUETOOTH_ADMIN, BLUETOOTH_CONNECT, BLUETOOTH_SCAN, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+android.api = 33
+android.minapi = 24
+android.ndk = 25b
+# Arquitetura otimizada para compilação estável em 64-bits
+android.archs = arm64-v8a
 
-      - name: Set up Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
+android.allow_backup = True
+android.accept_catch_all = True
+android.accept_sdk_license = True
 
-      - name: Install System Dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y git zip unzip python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
-
-      - name: Install Buildozer and Cython
-        run: |
-          pip install --upgrade pip
-          pip install "Cython==0.29.33" buildozer virtualenv
-
-      - name: Build with Buildozer
-        run: |
-          # Limpeza silenciosa forçada para evitar erros de interatividade
-          rm -rf .buildozer
-          buildozer android debug
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: H2O-Pro-APK
-          path: bin/*.apk
+[buildozer]
+log_level = 2
+warn_on_root = 1
