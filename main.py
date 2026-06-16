@@ -459,7 +459,7 @@ class H2OProApp(MDApp):
             if not adaptador.isEnabled():
                 self._add_log("Ative o Bluetooth!")
                 return
-            MAC_HC05 = "00:14:03:06:12:84"
+            MAC_HC05 = "E1:EF:6B:52:BF:16"
             dispositivo = adaptador.getRemoteDevice(MAC_HC05)
             spp_uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
             self.socket_bluetooth = dispositivo.createRfcommSocketToServiceRecord(spp_uuid)
