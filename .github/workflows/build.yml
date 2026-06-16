@@ -10,8 +10,6 @@ jobs:
     runs-on: ubuntu-22.04
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-      # Remove o Ant do caminho para impedir que o Buildozer o encontre
-      PATH: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64/bin:/opt/hostedtoolcache/Python/3.11.15/x64/bin:/usr/local/bin:/usr/bin:/bin
 
     steps:
       - name: Checkout repository
@@ -33,6 +31,11 @@ jobs:
           sudo apt update
           sudo apt install -y git zip unzip python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
 
+      - name: Remove Obsolete Tools
+        run: |
+          # Remove o Ant para forçar o Buildozer a usar o Gradle
+          sudo rm -rf /home/runner/.buildozer/android/platform/apache-ant* || true
+
       - name: Install Buildozer and Cython
         run: |
           pip install --upgrade pip
@@ -41,7 +44,6 @@ jobs:
       - name: Build with Buildozer
         run: |
           rm -rf .buildozer
-          # Executa sem o pipe 'yes' para evitar o erro de Broken Pipe
           buildozer android debug
 
       - name: Upload APK
