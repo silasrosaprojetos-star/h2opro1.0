@@ -2,6 +2,7 @@
 title = H2O Pro
 package.name = h2opro
 package.domain = org.silas
+source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 version = 1.0
 requirements = python3,kivy,kivymd,pyjnius,android
@@ -11,7 +12,6 @@ android.permissions = BLUETOOTH,BLUETOOTH_ADMIN,BLUETOOTH_CONNECT,BLUETOOTH_SCAN
 android.api = 33
 android.minapi = 24
 android.ndk = 25b
-# Focando apenas em uma arquitetura para economizar RAM
 android.archs = arm64-v8a
 android.gradle_dependencies = 
 android.skip_update = False
