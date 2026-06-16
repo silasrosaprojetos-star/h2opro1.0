@@ -16,9 +16,9 @@ android.permissions = BLUETOOTH, BLUETOOTH_ADMIN, BLUETOOTH_CONNECT, BLUETOOTH_S
 android.api = 33
 android.minapi = 24
 android.ndk = 25b
-# Arquitetura otimizada para compilação estável em 64-bits
 android.archs = arm64-v8a
 
+# Otimizações para o Buildozer usar o Gradle
 android.allow_backup = True
 android.accept_catch_all = True
 android.accept_sdk_license = True
