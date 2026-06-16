@@ -38,9 +38,9 @@ jobs:
 
       - name: Build with Buildozer
         run: |
-          # Limpeza silenciosa forçada para evitar erros de interatividade
+          # Remove cache antigo e força a aceitação de termos do SDK
           rm -rf .buildozer
-          buildozer android debug
+          yes | buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
