@@ -2,43 +2,38 @@ name: Build Android App
 
 on:
   push:
-    branches:
-      - main
-      - master
-  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout do código
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Configurar Python
-        uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
-      - name: Configurar Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Instalar dependências do sistema e Buildozer puro
+      - name: Install System Dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential libltdl-dev libffi-dev libssl-dev python3-dev zip unzip
+          sudo apt update
+          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+
+      - name: Install Buildozer and Cython (Locked Version)
+        run: |
           pip install --upgrade pip
-          pip install --upgrade buildozer cython virtualenv
+          pip install "Cython==0.29.33" buildozer virtualenv
 
-      - name: Compilar o APK
-        # Aqui está o segredo: rodamos o Buildozer diretamente, sem intermediários
-        run: buildozer android debug
+      - name: Build with Buildozer
+        run: |
+          buildozer android debug
 
-      - name: Fazer upload do APK gerado
-        uses: actions/upload-artifact@v4
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
         with:
-          name: h2opro-aplicativo
+          name: H2O-Pro-APK
           path: bin/*.apk
