@@ -1,29 +1,29 @@
 [app]
-
-# (str) Title of your application
 title = H2O Pro
-
-# (str) Package name
 package.name = h2opro
-
-# (str) Package domain (needed for android/ios packaging)
 package.domain = org.silas
-
-# (str) Source code where the main.py lives
 source.dir = .
-
-# (str) Application versioning
+source.include_exts = py,png,jpg,kv,atlas
 version = 1.0
 
-# (list) Application requirements
-requirements = python3,kivy,kivymd
+# Bibliotecas necessárias (Kivy, KivyMD e Pyjnius para o Bluetooth)
+requirements = python3,kivy,kivymd,jnius,android
 
-# (str) Supported orientation (landscape, sensor, portrait or all)
 orientation = portrait
+fullscreen = 0
 
-# (bool) Indicate if the application should be fullscreen or not
-fullscreen = 1
+# Permissões exigidas pelo Android moderno para o HC-06
+android.permissions = BLUETOOTH, BLUETOOTH_ADMIN, BLUETOOTH_CONNECT, BLUETOOTH_SCAN, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION
 
-# --- Configurações para não dar erro no GitHub Actions ---
-# Aceitar as licenças do SDK do Android automaticamente
-android.accept_sdk_license = True
+# Configurações de API e travamento do NDK (A SOLUÇÃO DO ERRO)
+android.api = 33
+android.minapi = 24
+android.ndk = 25b
+android.archs = arm64-v8a, armeabi-v7a
+
+android.allow_backup = True
+android.accept_catch_all = True
+
+[buildozer]
+log_level = 2
+warn_on_root = 1
